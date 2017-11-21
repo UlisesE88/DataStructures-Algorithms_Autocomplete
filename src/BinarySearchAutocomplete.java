@@ -153,16 +153,12 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 *             NullPointerException if prefix is null
 	 */
 	public Iterable<String> topMatches(String prefix, int k) {
-		if(prefix == null) {
-			throw new NullPointerException();
-		}
+		if(prefix == null) throw new NullPointerException();
+		if(k == 0) return new LinkedList<String>();;
 
 		int minIndex = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(prefix.length()));
 		int maxIndex = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(prefix.length()));
-		
-		if(minIndex == -1 || maxIndex == -1) {
-			return new LinkedList<String>();
-		}
+		if(minIndex == -1 || maxIndex == -1) return new LinkedList<String>();
 		
 		PriorityQueue<Term> pq = new PriorityQueue<Term>(k, new Term.WeightOrder());
 		for(int x = minIndex; x <= maxIndex; x++){
