@@ -71,6 +71,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		if(a == null || key == null || comparator == null) { 
 			throw new NullPointerException();
 		}
+		if(a.length == 0) return -1;
 
 		int low = -1;
 		int high = a.length-1;
@@ -109,7 +110,8 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		if(a == null || key == null || comparator == null) { 
 			throw new NullPointerException();
 		}
-
+		if(a.length == 0) return -1;
+		
 		int low = 0;
 		int high = a.length;
 
