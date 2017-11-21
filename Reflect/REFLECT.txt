@@ -1,16 +1,16 @@
-Name: firstname lastname
+Name: Jair Nino-Espino
 
-NetID: abc123
+NetID: jun
 
-Hours Spent: Give an exact (decimal) number here
+Hours Spent: 9.5
 
-Consulted With: provide names or NetIDs of any students, TAs, or professors you consulted with on the assignment. If you did not consult with anyone, you must explicitly write NONE.
+Consulted With: Joel Mire, Elle Deich, Sara Behn, Matt Shalhoub 
 
-Resources Used: Any books, papers, or online resources. If you did not use any outside resources, you must explicitly write NONE 
+Resources Used: Lecture videos from Professor Astrachan explainning the assignment, UTA Office Hours
 
-Difficulty level: [Given	an integer between 1 (Very Easy) to 10 (Extremely Difficult)]
+Difficulty level: [8]
 
-Impressions: [Your answer here]
+Impressions: [This was a good assignment for understanding priority queues and recent concepts we have learned. I liked how it touched on topics such as tires since it was a data structure recently learned. The instructions for the trieAutocomplete class were confusing at times.]
 
 ----------------------------------------------------------------------
 

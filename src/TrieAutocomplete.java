@@ -1,3 +1,7 @@
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.PriorityQueue;
+
 /**
  * General trie/priority queue algorithm for implementing Autocompletor
  * 
@@ -29,8 +33,11 @@ public class TrieAutocomplete implements Autocompletor {
 		if (terms == null || weights == null) {
 			throw new NullPointerException("One or more arguments null");
 		}
-		
-		// Represent the root as a dummy/placeholder node
+
+		if (terms.length != weights.length) {
+			throw new IllegalArgumentException();
+		}
+
 		myRoot = new Node('-', null, 0);
 
 		for (int i = 0; i < terms.length; i++) {
@@ -56,7 +63,25 @@ public class TrieAutocomplete implements Autocompletor {
 	 *             IllegalArgumentException if weight is negative.
 	 */
 	private void add(String word, double weight) {
-		// TODO: Implement add
+		if(word == null) throw new NullPointerException();
+		if(weight < 0) 	throw new  IllegalArgumentException();
+
+		Node current = myRoot;
+		for(int k = 0; k < word.length(); k++){
+			char ch = word.charAt(k);
+
+			if (current.children.get(ch) == null) {
+				current.children.put(ch, new Node(ch, current, weight));
+			}
+
+			if (current.mySubtreeMaxWeight < weight) {
+				current.mySubtreeMaxWeight = weight;
+			}
+			current = current.children.get(ch);
+		}
+		current.isWord = true;
+		current.myWord = word;
+		current.myWeight = weight; 
 	}
 
 	/**
@@ -80,8 +105,47 @@ public class TrieAutocomplete implements Autocompletor {
 	 *             NullPointerException if prefix is null
 	 */
 	public Iterable<String> topMatches(String prefix, int k) {
-		// TODO: Implement topKMatches
-		return null;
+		if(prefix == null) throw new NullPointerException();
+		if(k <= 0) return new LinkedList<String>();
+
+		Node current = myRoot;
+
+		for(char ch : prefix.toCharArray()) {
+			current = current.getChild(ch);
+			if(current==null) {
+				return new LinkedList<>();
+			}
+
+		}
+
+		PriorityQueue<Node> nodeQueue = new PriorityQueue<Node>(new Node.ReverseSubtreeMaxWeightComparator());
+		PriorityQueue<Term> termQueue = new PriorityQueue<Term>(k, new Term.WeightOrder());
+		nodeQueue.add(current);
+
+		while (nodeQueue.size() > 0) {
+			if(termQueue.size() >= k && nodeQueue.peek() != null 
+					&& termQueue.peek().getWeight() > nodeQueue.peek().getWeight()) {
+				break;
+			}
+
+			current = nodeQueue.remove();
+			if (current.isWord) {
+				termQueue.add(new Term(current.myWord, current.myWeight));
+			}
+			if (termQueue.size() > k) {
+				termQueue.remove();
+			}
+
+			for(Node n : current.children.values()) {
+				nodeQueue.add(n);
+			}
+		}
+
+		LinkedList<String> list = new LinkedList<String>();
+		while (termQueue.size() > 0) {
+			list.addFirst(termQueue.remove().getWord());
+		}
+		return list;
 	}
 
 	/**
@@ -96,8 +160,25 @@ public class TrieAutocomplete implements Autocompletor {
 	 *             NullPointerException if the prefix is null
 	 */
 	public String topMatch(String prefix) {
-		// TODO: Implement topMatch
-		return null;
+		if(prefix == null) throw new NullPointerException();
+
+		Node current = myRoot;
+		for(char ch : prefix.toCharArray()) {
+			current = current.getChild(ch);
+			if(current==null) {
+				return new String();
+			}
+		}
+
+		double maxWeight = current.mySubtreeMaxWeight;
+		while(current.myWeight != maxWeight) {
+			for(Node n : current.children.values()) {
+				if(n.mySubtreeMaxWeight == maxWeight) {
+					current = n;
+				}	
+			}
+		}
+		return current.myWord;
 	}
 
 	/**
@@ -105,7 +186,15 @@ public class TrieAutocomplete implements Autocompletor {
 	 * return 0.0
 	 */
 	public double weightOf(String term) {
-		// TODO complete weightOf
-		return 0.0;
+		Node current = myRoot;
+		for(int k = 0; k < term.length(); k++){
+			if(current.children.containsKey(term.charAt(k))) {
+				current = current.children.get(term.charAt(k));
+			}
+			else {
+				return 0.0;
+			}
+		}
+		return current.myWeight;
 	}
 }

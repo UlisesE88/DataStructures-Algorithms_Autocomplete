@@ -1,5 +1,7 @@
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.PriorityQueue;
 
 /**
  * 
@@ -34,13 +36,18 @@ public class BinarySearchAutocomplete implements Autocompletor {
 		if (terms == null || weights == null) {
 			throw new NullPointerException("One or more arguments null");
 		}
-		
-		myTerms = new Term[terms.length];
-		
-		for (int i = 0; i < terms.length; i++) {
-			myTerms[i] = new Term(terms[i], weights[i]);
+
+		if(terms.length != weights.length) {
+			throw new IllegalArgumentException();
 		}
 		
+		myTerms = new Term[terms.length];
+		for (int i = 0; i < terms.length; i++) {
+			myTerms[i] = new Term(terms[i], weights[i]);
+			if (weights[i] < 0) {
+				throw new IllegalArgumentException("Negative weight "+ weights[i]);
+			}
+		}
 		Arrays.sort(myTerms);
 	}
 
@@ -61,7 +68,27 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 *         being equal. If no such index exists, return -1 instead.
 	 */
 	public static int firstIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
-		// TODO: Implement firstIndexOf
+		if(a == null || key == null || comparator == null) { 
+			throw new NullPointerException();
+		}
+
+		int low = -1;
+		int high = a.length-1;
+
+		while (low+1 != high) {
+			int mid = (low + high)/2;
+			Term midVal = a[mid];
+			int cmp = comparator.compare(midVal, key);
+
+			if (cmp < 0)
+				low = mid;
+			else if (cmp >= 0)
+				high = mid;
+		}
+
+		if (comparator.compare(a[high], key) == 0) {
+			return high;
+		}
 		return -1;
 	}
 
@@ -79,7 +106,27 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 *         being equal. If no such index exists, return -1 instead.
 	 */
 	public static int lastIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
-		// TODO: Implement lastIndexOf
+		if(a == null || key == null || comparator == null) { 
+			throw new NullPointerException();
+		}
+
+		int low = 0;
+		int high = a.length;
+
+		while (low+1 != high) {
+			int mid = (low + high)/2;
+			Term midVal = a[mid];
+			int cmp = comparator.compare(midVal,key);
+
+			if (cmp <= 0)
+				low = mid;
+			else if (cmp > 0)
+				high = mid;
+		}
+
+		if (comparator.compare(a[low], key) == 0) {
+			return low;
+		}
 		return -1;
 	}
 
@@ -104,8 +151,29 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 *             NullPointerException if prefix is null
 	 */
 	public Iterable<String> topMatches(String prefix, int k) {
-		// TODO: Implement topMatches
-		return null;
+		if(prefix == null) {
+			throw new NullPointerException();
+		}
+
+		int minIndex = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(prefix.length()));
+		int maxIndex = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(prefix.length()));
+		
+		if(minIndex == -1 || maxIndex == -1) {
+			return new LinkedList<String>();
+		}
+		
+		PriorityQueue<Term> pq = new PriorityQueue<Term>(k, new Term.WeightOrder());
+		for(int x = minIndex; x <= maxIndex; x++){
+			pq.add(myTerms[x]);
+			if (pq.size() > k)
+				pq.remove();
+		}
+		
+		LinkedList<String> list = new LinkedList<String>();
+		while (pq.size() > 0) {
+			list.addFirst(pq.remove().getWord());
+		}
+		return list;
 	}
 
 	/**
@@ -122,8 +190,25 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 * 
 	 */
 	public String topMatch(String prefix) {
-		// TODO: Implement topMatch
-		return null;
+		if(prefix == null) {
+			throw new NullPointerException();
+		}
+		
+		int minIndex = firstIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(prefix.length()));
+		int maxIndex = lastIndexOf(myTerms, new Term(prefix, 0), new Term.PrefixOrder(prefix.length()));
+
+		if(minIndex == -1 || maxIndex == -1) {
+			return new String();
+		}
+		double maxweight = 0;
+		String maxTerm = "";
+		for (int i = minIndex; i <= maxIndex; i++) {
+			if (myTerms[i].getWeight() >= maxweight) {
+				maxweight = myTerms[i].getWeight();
+				maxTerm = myTerms[i].getWord();
+			}
+		}
+		return maxTerm;
 	}
 
 	/**
@@ -131,7 +216,15 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 * return 0.0
 	 */
 	public double weightOf(String term) {
-		// TODO complete weightOf
-		return 0.0;
+		if(term == null) {
+			throw new NullPointerException();
+		}
+		
+		double weight = 0.0;
+		for(Term t: myTerms) {
+			if(t.getWord().compareTo(term) == 0)
+				weight = t.getWeight();
+		}
+		return weight;
 	}
 }

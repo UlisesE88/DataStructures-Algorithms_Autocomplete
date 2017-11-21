@@ -27,11 +27,18 @@ public class Term implements Comparable<Term> {
 	 *             if weight is negative
 	 */
 	public Term(String word, double weight) {
-		// TODO: Complete Term constructor
+		if( weight < 0) {
+			throw new IllegalArgumentException("negative weight "+weight);
+			}
+		
+		if (word == null) {
+			throw new NullPointerException();
+		}
+		
 		myWord = word;
 		myWeight = weight;
 	}
-	
+
 	/**
 	 * The default sorting of Terms is lexicographical ordering.
 	 */
@@ -78,8 +85,16 @@ public class Term implements Comparable<Term> {
 		 *            - Two Terms whose words are being compared
 		 */
 		public int compare(Term v, Term w) {
-			// TODO: Implement compare
-			return 0;
+			String termV;
+			String termW;
+			
+			if(v.myWord.length() < r) termV = v.myWord.substring(0, v.myWord.length());
+			else termV = v.myWord.substring(0, r);
+			
+			if(w.myWord.length() < r) termW = w.myWord.substring(0, w.myWord.length());
+			else termW = w.myWord.substring(0, r);
+	
+			return termV.compareTo(termW);
 		}
 	}
 
@@ -91,11 +106,16 @@ public class Term implements Comparable<Term> {
 	 */
 	public static class ReverseWeightOrder implements Comparator<Term> {
 		public int compare(Term v, Term w) {
-			// TODO: Implement ReverseWeightOrder.compare
-			return 0;
+			if(v.myWeight < w.myWeight) {
+				return 1;
+			}
+			else if(v.myWeight == w.myWeight) {
+				return 0;
+			}
+			else
+				return -1;
 		}
 	}
-
 	/**
 	 * A Comparator for comparing Terms using only their weights, in ascending
 	 * order. This Comparator may be useful in writing your implementations of
@@ -104,8 +124,14 @@ public class Term implements Comparable<Term> {
 	 */
 	public static class WeightOrder implements Comparator<Term> {
 		public int compare(Term v, Term w) {
-			// TODO: Implement WeightOrder.compare
-			return 0;
+			if(v.myWeight < w.myWeight) {
+				return -1;
+			}
+			else if(v.myWeight == w.myWeight) {
+				return 0;
+			}
+			else
+				return 1;
 		}
 	}
 }
