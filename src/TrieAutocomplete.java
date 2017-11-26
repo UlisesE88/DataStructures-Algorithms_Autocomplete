@@ -39,9 +39,11 @@ public class TrieAutocomplete implements Autocompletor {
 		}
 
 		myRoot = new Node('-', null, 0);
-
 		for (int i = 0; i < terms.length; i++) {
 			add(terms[i], weights[i]);
+			if (weights[i] < 0) {
+				throw new IllegalArgumentException();
+			}
 		}
 	}
 
@@ -70,11 +72,10 @@ public class TrieAutocomplete implements Autocompletor {
 		for(int k = 0; k < word.length(); k++){
 			char ch = word.charAt(k);
 
-			if (current.children.get(ch) == null) {
+			if(current.children.get(ch) == null){
 				current.children.put(ch, new Node(ch, current, weight));
 			}
-
-			if (current.mySubtreeMaxWeight < weight) {
+			if(current.mySubtreeMaxWeight < weight){
 				current.mySubtreeMaxWeight = weight;
 			}
 			current = current.children.get(ch);
@@ -106,28 +107,28 @@ public class TrieAutocomplete implements Autocompletor {
 	 */
 	public Iterable<String> topMatches(String prefix, int k) {
 		if(prefix == null) throw new NullPointerException();
-		if(k <= 0) return new LinkedList<String>();
+		if(k < 0) throw new IllegalArgumentException();
+		if(k == 0) return new LinkedList<String>();
 
+		PriorityQueue<Node> nodeQueue = new PriorityQueue<Node>(k, new Node.ReverseSubtreeMaxWeightComparator());
+		PriorityQueue<Term> termQueue = new PriorityQueue<Term>(k, new Term.WeightOrder());
+		
 		Node current = myRoot;
-
 		for(char ch : prefix.toCharArray()) {
 			current = current.getChild(ch);
 			if(current==null) {
-				return new LinkedList<>();
+				return new LinkedList<String>();
 			}
-
 		}
 
-		PriorityQueue<Node> nodeQueue = new PriorityQueue<Node>(new Node.ReverseSubtreeMaxWeightComparator());
-		PriorityQueue<Term> termQueue = new PriorityQueue<Term>(k, new Term.WeightOrder());
 		nodeQueue.add(current);
 
 		while (nodeQueue.size() > 0) {
-			if(termQueue.size() >= k && nodeQueue.peek() != null 
-					&& termQueue.peek().getWeight() > nodeQueue.peek().getWeight()) {
+			if(termQueue.size() == k && nodeQueue.size() > 0 &&
+					termQueue.peek().getWeight() > nodeQueue.peek().mySubtreeMaxWeight){
 				break;
 			}
-
+			
 			current = nodeQueue.remove();
 			if (current.isWord) {
 				termQueue.add(new Term(current.myWord, current.myWeight));
@@ -135,7 +136,6 @@ public class TrieAutocomplete implements Autocompletor {
 			if (termQueue.size() > k) {
 				termQueue.remove();
 			}
-
 			for(Node n : current.children.values()) {
 				nodeQueue.add(n);
 			}
