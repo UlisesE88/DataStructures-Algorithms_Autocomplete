@@ -84,7 +84,7 @@ public class Term implements Comparable<Term> {
 		 * @param v/w
 		 *            - Two Terms whose words are being compared
 		 */
-		public int compare(Term v, Term w) {
+		public int compare(Term v, Term w) { //Converts the strings to their size if less than r, if not both terms are compared all the way up to r index. 
 			String termV;
 			String termW;
 			
@@ -105,7 +105,7 @@ public class Term implements Comparable<Term> {
 	 *
 	 */
 	public static class ReverseWeightOrder implements Comparator<Term> {
-		public int compare(Term v, Term w) {
+		public int compare(Term v, Term w) { //compares weight between both Terms but in descending order.
 			if(v.myWeight < w.myWeight) {
 				return 1;
 			}
@@ -123,7 +123,7 @@ public class Term implements Comparable<Term> {
 	 *
 	 */
 	public static class WeightOrder implements Comparator<Term> {
-		public int compare(Term v, Term w) {
+		public int compare(Term v, Term w) { //compares weight between both Terms but in ascending order.
 			if(v.myWeight < w.myWeight) {
 				return -1;
 			}

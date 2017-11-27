@@ -67,7 +67,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 * @return The first index i for which comparator considers a[i] and key as
 	 *         being equal. If no such index exists, return -1 instead.
 	 */
-	public static int firstIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
+	public static int firstIndexOf(Term[] a, Term key, Comparator<Term> comparator) { //returns the first index within the array of terms with targeted key.
 		if(a == null || key == null || comparator == null) { 
 			throw new NullPointerException();
 		}
@@ -106,7 +106,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 * @return The last index i for which comparator considers a[i] and key as
 	 *         being equal. If no such index exists, return -1 instead.
 	 */
-	public static int lastIndexOf(Term[] a, Term key, Comparator<Term> comparator) {
+	public static int lastIndexOf(Term[] a, Term key, Comparator<Term> comparator) { //returns the last index within the array of terms with targeted key. 
 		if(a == null || key == null || comparator == null) { 
 			throw new NullPointerException();
 		}
@@ -152,7 +152,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 * @throws a
 	 *             NullPointerException if prefix is null
 	 */
-	public Iterable<String> topMatches(String prefix, int k) {
+	public Iterable<String> topMatches(String prefix, int k) { //Returns a list of k terms with targeted prefix who have the largest weight in descending order. 
 		if(prefix == null) throw new NullPointerException();
 		if(k == 0) return new LinkedList<String>();;
 
@@ -187,7 +187,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 *             NullPointerException if the prefix is null
 	 * 
 	 */
-	public String topMatch(String prefix) {
+	public String topMatch(String prefix) {  //Method iterates through my terms starting from minindex and maxindex based on the targeted prefix, and returns the String with the max weight within that range.
 		if(prefix == null) {
 			throw new NullPointerException();
 		}
@@ -213,7 +213,7 @@ public class BinarySearchAutocomplete implements Autocompletor {
 	 * Return the weight of a given term. If term is not in the dictionary,
 	 * return 0.0
 	 */
-	public double weightOf(String term) {
+	public double weightOf(String term) { //Method iterates through myTerms and returns the weight of term target
 		if(term == null) {
 			throw new NullPointerException();
 		}

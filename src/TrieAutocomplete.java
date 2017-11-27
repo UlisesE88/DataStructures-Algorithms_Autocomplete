@@ -64,7 +64,7 @@ public class TrieAutocomplete implements Autocompletor {
 	 * @throws an
 	 *             IllegalArgumentException if weight is negative.
 	 */
-	private void add(String word, double weight) {
+	private void add(String word, double weight) { //methods adds a word to the tire and adds the weight of the word along with it.
 		if(word == null) throw new NullPointerException();
 		if(weight < 0) 	throw new  IllegalArgumentException();
 
@@ -75,7 +75,7 @@ public class TrieAutocomplete implements Autocompletor {
 			if(current.children.get(ch) == null){
 				current.children.put(ch, new Node(ch, current, weight));
 			}
-			if(current.mySubtreeMaxWeight < weight){
+			if(weight > current.mySubtreeMaxWeight){
 				current.mySubtreeMaxWeight = weight;
 			}
 			current = current.children.get(ch);
@@ -105,7 +105,7 @@ public class TrieAutocomplete implements Autocompletor {
 	 * @throws a
 	 *             NullPointerException if prefix is null
 	 */
-	public Iterable<String> topMatches(String prefix, int k) {
+	public Iterable<String> topMatches(String prefix, int k) { //Returns an array containing the k words from the trie with the largest weight which targeted prefix, in descending weight order.
 		if(prefix == null) throw new NullPointerException();
 		if(k < 0) throw new IllegalArgumentException();
 		if(k == 0) return new LinkedList<String>();
@@ -159,7 +159,7 @@ public class TrieAutocomplete implements Autocompletor {
 	 * @throws a
 	 *             NullPointerException if the prefix is null
 	 */
-	public String topMatch(String prefix) {
+	public String topMatch(String prefix) { //Traverses through tire to to find words with targeted prefix first. Then traverse through children nodes to find max weight and returns that word.
 		if(prefix == null) throw new NullPointerException();
 
 		Node current = myRoot;
@@ -185,7 +185,7 @@ public class TrieAutocomplete implements Autocompletor {
 	 * Return the weight of a given term. If term is not in the dictionary,
 	 * return 0.0
 	 */
-	public double weightOf(String term) {
+	public double weightOf(String term) { //Method traverses through tire and returns the weight of term target
 		Node current = myRoot;
 		for(int k = 0; k < term.length(); k++){
 			if(current.children.containsKey(term.charAt(k))) {
